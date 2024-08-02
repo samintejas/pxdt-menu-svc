@@ -33,14 +33,21 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusBadRequest, err)
 	}
 
-	log.Println(payload.Email)
 	u, err := h.store.GetUserByEmail(payload.Email)
 
 	if err != nil {
-		log.Println("abc ", err)
+		log.Println(err)
 	}
 
-	log.Println(u)
-
+	if u == nil {
+		log.Println("creating new user")
+		newuser := types.User{
+			FirstName: payload.FirstName,
+			LastName:  payload.LastName,
+			Email:     payload.Email,
+			Password:  payload.Password,
+		}
+		h.store.CreateUser(&newuser)
+	}
 	// if it doesnt create new user
 }

@@ -18,6 +18,8 @@ func main() {
 	log.Println("PXDT - Menu service")
 
 	db := connectDatabase()
+	defer db.Close()
+
 	startServer(db)
 
 }
