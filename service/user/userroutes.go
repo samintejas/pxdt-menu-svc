@@ -7,15 +7,16 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"projectx.io/drivethru/store"
 	"projectx.io/drivethru/types"
 	"projectx.io/drivethru/utils"
 )
 
 type Handler struct {
-	store types.UserStore
+	store store.UserStore
 }
 
-func NewHandler(store types.UserStore) *Handler {
+func NewHandler(store store.UserStore) *Handler {
 	return &Handler{store: store}
 }
 
@@ -43,12 +44,12 @@ func (h *Handler) handleView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
-	log.Println("TODO : Login")
+	utils.WriteError(w, http.StatusForbidden, fmt.Errorf("login functionality is under development"))
 }
 
 func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 
-	var payload types.RegisterUserPayload
+	var payload types.RegisterUser
 	if err := utils.ParseJson(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 	}
@@ -66,7 +67,11 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 			Email:     payload.Email,
 			Password:  payload.Password,
 		}
-		h.store.CreateUser(&newuser)
+		userId, err := h.store.CreateUser(&newuser)
+		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("failed to create new user"))
+		}
+		utils.WriteJson(w, http.StatusAccepted, types.RegistedUser{ID: userId})
 	} else {
 		utils.WriteError(w, http.StatusConflict, fmt.Errorf("email already registered"))
 	}

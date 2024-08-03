@@ -3,7 +3,6 @@ package user
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	"projectx.io/drivethru/types"
 )
@@ -78,22 +77,20 @@ func (s *Store) GetUserById(id uint) (*types.User, error) {
 	return nil, nil
 }
 
-func (s *Store) CreateUser(user *types.User) error {
+func (s *Store) CreateUser(user *types.User) (uint, error) {
 
 	query := "INSERT INTO users (first_name,last_name,email,password) values (?,?,?,?)"
 	result, err := s.db.Exec(query, user.FirstName, user.LastName, user.Email, user.Password)
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	lastInserted, err := result.LastInsertId()
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	log.Printf("Records inserted %d \n", lastInserted)
-
-	return nil
+	return uint(lastInserted), nil
 
 }
