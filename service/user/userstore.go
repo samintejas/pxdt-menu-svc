@@ -16,71 +16,70 @@ func NewStore(db *sql.DB) *Store {
 }
 
 func (s *Store) GetUserByEmail(email string) (*types.User, error) {
-
-	rows, err := s.db.Query("SELECT * FROM users WHERE email= ?", email)
-
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	if rows.Next() {
-
-		u := new(types.User)
-		err = scanRowIntoUser(rows, u)
-		if err != nil {
-			return nil, err
-		}
-
-		if u.ID == 0 {
-			return nil, fmt.Errorf("user not found")
-		}
-		return u, nil
-	}
-	return nil, nil
+	query := `
+        SELECT id, username, email, password, first_name, last_name, status, created_at, updated_at
+        FROM users
+        WHERE email = ?
+    `
+	return s.getUserByQuery(query, email)
 }
 
-func scanRowIntoUser(rows *sql.Rows, user *types.User) error {
-
-	return rows.Scan(
-		&user.ID,
-		&user.FirstName,
-		&user.LastName,
-		&user.Email,
-		&user.Password,
-	)
-
+func (s *Store) GetUserByEmailAndStatus(email string, status string) (*types.User, error) {
+	query := `
+        SELECT id, username, email, password, first_name, last_name, status, created_at, updated_at
+        FROM users
+        WHERE email = ?
+    `
+	return s.getUserByQuery(query, email)
 }
 
 func (s *Store) GetUserById(id uint) (*types.User, error) {
+	query := `
+        SELECT id, username, email, password, first_name, last_name, status, created_at, updated_at
+        FROM users
+        WHERE id = ?
+    `
+	return s.getUserByQuery(query, id)
+}
 
-	rows, err := s.db.Query("SELECT * FROM users WHERE id = ?", id)
+func (s *Store) GetUserByIdAndStatus(email string, status string) (*types.User, error) {
+	query := `
+        SELECT id, username, email, password, first_name, last_name, status, created_at, updated_at
+        FROM users
+        WHERE id = ? AND status = ?
+    `
+	return s.getUserByQuery(query, email, status)
+}
+
+func (s *Store) getUserByQuery(query string, args ...any) (*types.User, error) {
+
+	var user types.User
+	err := s.db.QueryRow(query, args...).Scan(
+		&user.ID,
+		&user.UserName,
+		&user.Email,
+		&user.Password,
+		&user.FirstName,
+		&user.LastName,
+		&user.Status,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
 
 	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	if rows.Next() {
-
-		u := new(types.User)
-		err = scanRowIntoUser(rows, u)
-		if err != nil {
-			return nil, err
+		if err == sql.ErrNoRows {
+			return nil, nil
 		}
-
-		if u.ID == 0 {
-			return nil, fmt.Errorf("user not found")
-		}
-		return u, nil
+		return nil, fmt.Errorf("error fetching user: %w", err)
 	}
-	return nil, nil
+
+	return &user, nil
 }
 
 func (s *Store) CreateUser(user *types.User) (uint, error) {
 
-	query := "INSERT INTO users (first_name,last_name,email,password) values (?,?,?,?)"
-	result, err := s.db.Exec(query, user.FirstName, user.LastName, user.Email, user.Password)
+	query := "INSERT INTO users (username,first_name,last_name,email,password,status) values (?,?,?,?,?,?)"
+	result, err := s.db.Exec(query, user.UserName, user.FirstName, user.LastName, user.Email, user.Password, user.Status)
 
 	if err != nil {
 		return 0, err
