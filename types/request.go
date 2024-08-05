@@ -10,10 +10,10 @@ type RegisterUser struct {
 }
 
 type UpdateUser struct {
-	UserName  *string `json:"userName,omitempty" validate:"omitempty,min=2,max=32,alphanum"`
-	FirstName *string `json:"firstName,omitempty" validate:"omitempty,min=1,max=32,alpha"`
-	LastName  *string `json:"lastName,omitempty" validate:"omitempty,min=1,max=32,alpha"`
-	Email     *string `json:"email,omitempty" validate:"omitempty,email,max=255"`
-	Password  *string `json:"password,omitempty" validate:"omitempty,min=8,max=64,containsany=!@#$%^&*"`
-	Status    *string `json:"status,omitempty" validate:"omitempty,oneof=active inactive"`
+	UserName  string `json:"userName,omitempty" validate:"omitempty,min=2,max=32,alphanum"`
+	FirstName string `json:"firstName,omitempty" validate:"omitempty,min=1,max=32,alpha"`
+	LastName  string `json:"lastName,omitempty" validate:"omitempty,min=1,max=32,alpha"`
+	Email     string `json:"email,omitempty" validate:"omitempty,email,max=255"`
+	Password  string `json:"password,omitempty" validate:"omitempty,min=8,max=64,containsany=!@#$%^&*"`
+	Status    string `json:"status,omitempty" validate:"omitempty,oneof=active inactive"`
 }

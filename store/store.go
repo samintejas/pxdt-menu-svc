@@ -3,9 +3,11 @@ package store
 import "projectx.io/drivethru/types"
 
 type UserStore interface {
+	ExcistsByUsernameAndEmail(username string, email string) (bool, error)
 	GetUserByEmail(email string) (*types.User, error)
 	CreateUser(user *types.User) (uint, error)
 	GetUserById(id uint) (*types.User, error)
+	UpdateUser(user *types.User) (*types.User, error)
 }
 
 type ItemStore interface {

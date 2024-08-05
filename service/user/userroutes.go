@@ -43,14 +43,31 @@ func (h *Handler) handleUpdate(w http.ResponseWriter, r *http.Request) {
 	u, err := h.store.GetUserById(uint(id))
 	if u == nil {
 		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("user not found"))
+	} else if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+	} else {
+
+		updateuser := new(types.User)
+		updateuser.ID = u.ID
+		updateuser.FirstName = payload.FirstName
+		updateuser.LastName = payload.LastName
+		updateuser.UserName = payload.UserName
+		updateuser.Email = payload.Email
+		updateuser.Status = payload.Status
+		updateuser.Password = payload.Password
+
+		latestuser, err := h.store.UpdateUser(updateuser)
+
+		if err != nil {
+			utils.WriteError(w, http.StatusInternalServerError, err)
+		}
+		utils.WriteJson(w, http.StatusOK, latestuser)
 	}
 
-	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
-	}
 }
 
 func (h *Handler) handleView(w http.ResponseWriter, r *http.Request) {
+
 	vars := mux.Vars(r)
 	id, err := strconv.ParseUint(vars["id"], 10, 64)
 
@@ -62,9 +79,10 @@ func (h *Handler) handleView(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		utils.WriteError(w, http.StatusNotFound, err)
+	} else {
+		utils.WriteJson(w, http.StatusOK, user)
 	}
 
-	utils.WriteJson(w, http.StatusOK, user)
 }
 
 func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request) {
@@ -78,13 +96,13 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusBadRequest, err)
 	}
 
-	u, err := h.store.GetUserByEmail(payload.Email)
+	ex, err := h.store.ExcistsByUsernameAndEmail(payload.UserName, payload.Email)
 
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 	}
 
-	if u == nil {
+	if !ex {
 		newuser := types.User{
 			UserName:  payload.UserName,
 			FirstName: payload.FirstName,
@@ -101,6 +119,6 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 			utils.WriteJson(w, http.StatusCreated, types.RegistedUser{ID: userId})
 		}
 	} else {
-		utils.WriteError(w, http.StatusConflict, fmt.Errorf("email already registered"))
+		utils.WriteError(w, http.StatusConflict, fmt.Errorf("user/email already registered"))
 	}
 }

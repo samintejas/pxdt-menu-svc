@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"projectx.io/drivethru/cmd/api"
-	"projectx.io/drivethru/db"
+	"projectx.io/drivethru/cmd/db"
 )
 
 // TODO :
