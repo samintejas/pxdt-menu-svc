@@ -12,6 +12,8 @@ import (
 // TODO :
 // Logging
 // Configuration
+// Error page
+// Password hashing
 
 func main() {
 
