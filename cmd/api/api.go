@@ -32,9 +32,6 @@ func (s *APIServer) Run() error {
 	router := mux.NewRouter()
 	subrouter := router.PathPrefix("/api/v1").Subrouter()
 
-	// rootTemplatePath := filepath.Join("..", "templates", "root.html")
-	// errorTemplatePath := filepath.Join("..", "templates", "error.html")
-
 	rtpl, err1 := template.ParseFiles("./templates/root.html")
 	etpl, err2 := template.ParseFiles("./templates/error.html")
 

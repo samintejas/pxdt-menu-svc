@@ -13,6 +13,9 @@ import (
 // Logging
 // Configuration
 // Error page
+// Validation
+// login
+// jwt
 // Password hashing
 
 func main() {

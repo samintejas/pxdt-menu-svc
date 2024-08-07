@@ -17,3 +17,29 @@ type UpdateUser struct {
 	Password  string `json:"password,omitempty" validate:"omitempty,min=8,max=64,containsany=!@#$%^&*"`
 	Status    string `json:"status,omitempty" validate:"omitempty,oneof=active inactive"`
 }
+
+type CreateItem struct {
+	Name        string `json:"name"`
+	Category    uint   `json:"category"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+}
+
+type CreateCategory struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+}
+
+type UpdateItem struct {
+	Name        string `json:"name,omitempty"`
+	Category    uint   `json:"category,omitempty"`
+	Description string `json:"description,omitempty"`
+	Status      string `json:"status,omitempty"`
+}
+
+type UpdateCategory struct {
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
+	Status      string `json:"status,omitempty"`
+}
