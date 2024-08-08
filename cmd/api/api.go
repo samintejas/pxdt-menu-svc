@@ -46,7 +46,8 @@ func (s *APIServer) Run() error {
 	userHandler := user.NewHandler(userStore)
 	userHandler.RegisterRoutes(subrouter)
 
-	itemHandler := item.NewHandler()
+	itemStore := item.NewStore(s.db)
+	itemHandler := item.NewHandler(itemStore)
 	itemHandler.RegisterRoutes(subrouter)
 
 	categoryHandler := category.NewHandler()

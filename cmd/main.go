@@ -17,6 +17,7 @@ import (
 // login
 // jwt
 // Password hashing
+// update api should not allow to update duplicate username/email
 
 func main() {
 

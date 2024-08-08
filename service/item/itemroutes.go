@@ -3,7 +3,6 @@ package item
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 	"projectx.io/drivethru/store"
@@ -27,14 +26,7 @@ func (h *Handler) RegisterRoutes(router *mux.Router) {
 }
 
 func (h *Handler) getItems(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.ParseUint(vars["id"], 10, 64)
-
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
-	}
-
-	item, err := h.store.GetItemById(uint(id))
+	item, err := h.store.GetAllItems()
 
 	if item == nil {
 		utils.WriteError(w, http.StatusNotFound, fmt.Errorf("user not found"))
