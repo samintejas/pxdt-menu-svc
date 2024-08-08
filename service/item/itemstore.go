@@ -28,7 +28,20 @@ func (s *Store) GetAllItems() (*types.Item, error) {
 }
 
 func (s *Store) CreateItem(item *types.Item) (uint, error) {
-	return 0, nil
+
+	query := "INSERT INTO items (name,category,description,status) values (?,?,?,?,?,?)"
+
+	result, err := s.db.Exec(query, item.Name, item.Category, item.Description, item.Status)
+	if err != nil {
+		return 0, err
+	}
+	lastInserted, err := result.LastInsertId()
+
+	if err != nil {
+		return 0, err
+	}
+
+	return uint(lastInserted), nil
 }
 
 func (s *Store) GetItemById(id uint) (*types.Item, error) {

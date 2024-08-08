@@ -4,10 +4,10 @@ type RegistedUser struct {
 	ID uint `json:"id"`
 }
 
-type createdItem struct {
+type CreatedItem struct {
 	ID uint `json:"id"`
 }
 
-type createdCategory struct {
+type CreatedCategory struct {
 	ID uint `json:"id"`
 }

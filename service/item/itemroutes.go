@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"projectx.io/drivethru/store"
+	"projectx.io/drivethru/types"
 	"projectx.io/drivethru/utils"
 )
 
@@ -39,6 +40,25 @@ func (h *Handler) getItems(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) addItem(w http.ResponseWriter, r *http.Request) {
+
+	var payload types.CreateItem
+	if err := utils.ParseJson(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+	}
+
+	newItem := types.Item{
+		Name:        payload.Name,
+		Category:    payload.Category,
+		Description: payload.Description,
+		Status:      payload.Status,
+	}
+	id, err := h.store.CreateItem(&newItem)
+
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+	} else {
+		utils.WriteJson(w, http.StatusCreated, types.CreatedItem{ID: id})
+	}
 
 }
 
