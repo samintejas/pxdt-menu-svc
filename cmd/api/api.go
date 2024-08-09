@@ -2,8 +2,8 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -30,21 +30,14 @@ func NewAPIServer(addr string, db *sql.DB) *APIServer {
 func (s *APIServer) Run() error {
 
 	router := mux.NewRouter()
+	registerPages(router)
+
 	subrouter := router.PathPrefix("/api/v1").Subrouter()
 
-	rtpl, err1 := template.ParseFiles("./templates/root.html")
-	etpl, err2 := template.ParseFiles("./templates/error.html")
-
-	if err1 != nil || err2 != nil {
-		log.Fatalf("could not load templates")
-	}
-
-	pageshandler := page.NewHandler(rtpl, etpl)
-	pageshandler.RegisterRoutes(router)
-
+	userRouter := subrouter.PathPrefix("/user").Subrouter()
 	userStore := user.NewStore(s.db)
 	userHandler := user.NewHandler(userStore)
-	userHandler.RegisterRoutes(subrouter)
+	userHandler.RegisterRoutes(userRouter)
 
 	itemStore := item.NewStore(s.db)
 	itemHandler := item.NewHandler(itemStore)
@@ -54,4 +47,18 @@ func (s *APIServer) Run() error {
 	categoryHandler.RegisterRoutes(subrouter)
 
 	return http.ListenAndServe(s.addr, router)
+}
+func registerPages(router *mux.Router) error {
+
+	rtpl, err1 := template.ParseFiles("./templates/root.html")
+	etpl, err2 := template.ParseFiles("./templates/error.html")
+
+	if err1 != nil || err2 != nil {
+		fmt.Errorf("could not load templates")
+	}
+
+	pageshandler := page.NewHandler(rtpl, etpl)
+	pageshandler.RegisterRoutes(router)
+
+	return nil
 }

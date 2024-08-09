@@ -25,7 +25,6 @@ func main() {
 
 	db := connectDatabase()
 	defer db.Close()
-
 	startServer(db)
 
 }
